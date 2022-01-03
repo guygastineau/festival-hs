@@ -1,0 +1,18 @@
+cabal-version:      2.4
+name:               FestivalExamples
+version:            0.1.0
+description:        Examples for using Festival.
+license:            BSD-3-Clause
+author:             Guy Gastineau
+maintainer:         strings.stringsandstrings@gmail.com
+category:           text-to-speech
+extra-source-files: CHANGELOG.md
+
+executable this-is-a-test
+    main-is: ThisIsATest.hs
+    hs-source-dirs:
+        .
+    build-depends:
+        base <5
+      , festival
+    default-language: Haskell2010

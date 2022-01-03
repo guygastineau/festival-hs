@@ -1,0 +1,31 @@
+cabal-version:      2.4
+name:               festival
+version:            0.1.0.0
+
+synopsis:           C bindings plus conveniences for the festival tts system.
+
+description:        Visit the README.md at https://github.com:guygastineau/haskell-festival.git
+
+bug-reports:        https://github.com/guygastineau/haskell-festival/issues
+
+license:            BSD-3-Clause
+author:             Guy Gastineau
+maintainer:         strings.stringsandstrings@gmail.com
+
+copyright:          Guy Gastineau 2022
+category:           text-to-speech
+extra-source-files: CHANGELOG.md
+
+library
+    exposed-modules:
+        Festival
+        Festival.C
+    c-sources:
+        src-c/festival-c-wrapper.cpp
+    hs-source-dirs:
+        src
+    build-depends:
+        base <5
+    ghc-options: -pgmlg++
+    extra-libraries: stdc++ Festival estbase estools eststring asound gomp ncursesw
+    default-language: Haskell2010
