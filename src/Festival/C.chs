@@ -30,14 +30,18 @@ initialize :: InitConf -> IO ()
 initialize InitConf{..} = initC (if loadConf then 1 else 0) (toEnum heapSize)
 foreign import ccall "festival_c_initialize" initC :: CInt -> CInt -> IO ()
 
+-- | This should load a language file for festival.
 initLang :: String -> IO ()
 initLang = flip withCString cInitLang
 foreign import ccall "festival_c_init_lang" cInitLang :: CString -> IO ()
 
+-- | Say something! Direct Text-To-Speech. NB. This may take some time.
 sayText :: String -> IO ()
 sayText = flip withCString sayTextC
 foreign import ccall "festival_c_say_text" sayTextC :: CString -> IO ()
 
+-- | Foreign pointer to instance of C++ class `EST_Wave` from the EST collection
+-- of speech processing tools from Edinburgh.  It is a dependency of festival (c).
 {#pointer *ESTWave foreign finalizer freeWave newtype #}
 
 {#fun newWave as cNewWave { } -> `ESTWave' #}
