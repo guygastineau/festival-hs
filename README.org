@@ -7,8 +7,8 @@
 
 * Motivations
 
-I found the interesting project Festival [[https://github.com/festvox/festival][Festival]].  It stands out as a modular
-kit for innovating with voice synthesis, and the default implemntations have
+I found the interesting project [[https://github.com/festvox/festival][Festival]].  It stands out as a modular
+kit for innovating with voice synthesis, and the default implementations have
 very nice vocalization compared to competitors like espeak-ng.
 NB. Festival takes much longer to vocalize text than espeak-ng.  With this in
 mind, I decided to bind a sensible portion of the c++ bindings from [[https://github.com/festvox/festival/blob/master/src/include/festival.h][festival.h]]
@@ -25,19 +25,18 @@ for Haskell, so we can enjoy high quality text to speech and wave.
   applications.  I plan on creating at least one higher level library to utilize
   festival as a pluggable backend.  I want to encroach on abstraction and driver
   code for users of festival as little as possible, therefore the scope of this
-  shall remain small.
+  library shall remain narrow.
 - Provide some tests AND examples.  We will have some tests that rely on
-  DeepSpeak by mozilla.  It works wuickly, and it is based on solid research.
+  DeepSpeak by mozilla.  It works quickly, and it is based on solid research.
   Find it on github.  I installed the binary version from the AUR, because I
-  really wanted to avoid the gnarly java dependencies (plus more stuff int he AUR).
-  That is a pain point, but these tests will be isolated into thier own suite.
+  really wanted to avoid the gnarly java dependencies (plus more stuff in the AUR).
+  That is a pain point, but these tests will be isolated in their own suite.
   If anyone knows an stt engine with a smaller build time dependency footprint
   feel free to suggest it, but it needs to understand our computer speech
   consistently.
 - Keep festival from using its async engine.  Their docs reference needing to
   wait on the async runtime after a specific procedure.  Every such procedure
-  shall not be bound by this library.  I think the embedded lisp can also start
-  festival's async engine, and thus I have not included it.
+  shall not be bound by this library.
 
 * Non-Goals
 
