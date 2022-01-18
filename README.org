@@ -2,6 +2,9 @@
 #+AUTHOR: Guy Gastineau
 #+EMAIL: strings.stringsandstrings@gmail.com
 
+* TODO Release.
+*ATTENTION: This library is currently pre-release!*
+
 * Motivations
 
 I found the interesting project Festival [[https://github.com/festvox/festival][Festival]].  It stands out as a modular
