@@ -16,3 +16,13 @@ executable this-is-a-test
         base <5
       , festival
     default-language: Haskell2010
+
+executable festival-hs
+    main-is: FestivalHs.hs
+    hs-source-dirs: .
+    build-depends:
+        base <5
+      , festival
+      , optparse-applicative >=0.16 && <0.17
+      , bytestring
+    default-language: Haskell2010

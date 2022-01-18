@@ -20,8 +20,11 @@ module Festival.C
 import Foreign
 import Foreign.C
 import Foreign.C.Types
+import Foreign.ForeignPtr
 
-import GHC.Natural (Natural)
+import           GHC.Natural (Natural)
+import           Data.Bifunctor (second)
+import qualified Data.ByteString.Internal as BS
 
 data InitConf = InitConf { loadConf :: Bool, heapSize :: Int }
   deriving (Eq, Show)
@@ -62,11 +65,13 @@ newWave :: Natural -> IO ESTWave
 newWave rate = (fmap . const) <*> setSampleRate rate =<< cNewWave
 
 {#fun festival_c_text_to_wave as cTextToWave { `CString', `ESTWave' } -> `CInt' #}
-textToWave :: Int -> String -> IO ESTWave
+textToWave :: Int -> String -> IO (Either String ESTWave)
 textToWave sampleRate = flip withCString $ \text -> do
   wave <- cNewWave
   cSetSampleRate wave (toEnum sampleRate)
-  return wave
+  ret <- cTextToWave text wave
+  if ret == 0 then return $ Left "festival failed to produce wave from text"
+    else return $ Right wave
 
 -- The #fun construct breaks on `Ptr CShort`
 foreign import ccall "EST-wrapper.h copySample"
@@ -75,8 +80,17 @@ foreign import ccall "EST-wrapper.h copySample"
 waveGetForeign :: ESTWave -> ForeignPtr ESTWave
 waveGetForeign (ESTWave p) = p
 
-sample :: ESTWave -> IO (Ptr CShort)
-sample wave = do
+sampleForeign :: ESTWave -> IO (ForeignPtr CShort, Int)
+sampleForeign wave = do
   let count = fromIntegral $ sampleCount wave
-  allocaBytes count $ \buf -> withForeignPtr (waveGetForeign wave) $ \w ->
-    cCopySample (toEnum count) buf w >> return buf
+  dest <- mallocForeignPtrArray count
+  withForeignPtr dest $ \buf ->
+    withForeignPtr (waveGetForeign wave) $ \w ->
+      cCopySample (toEnum count) buf w
+  return (dest, count)
+
+-- | Uses native endianness.
+sample :: ESTWave -> IO BS.ByteString
+sample wave = do
+  (xs, n) <- sampleForeign wave
+  return $ BS.fromForeignPtr (castForeignPtr xs) 0 (n * 2)

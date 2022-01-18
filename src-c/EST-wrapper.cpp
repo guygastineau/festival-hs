@@ -37,7 +37,9 @@ int sampleCount(ESTWave *wave)
 
 void copySample(int n, short *buf, ESTWave *wave)
 {
-  static_cast<EST_Wave*>((void *)wave)->copy_sample(n, buf);
+  /* I thought '1' was originally where the count went, but now I think
+	 it is the channel number? */
+  static_cast<EST_Wave*>((void *)wave)->copy_sample(0, buf,0 ,n);
 }
 
 

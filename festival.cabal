@@ -28,6 +28,7 @@ library
         src
     build-depends:
         base <5
+      , bytestring
     ghc-options: -pgmlg++
     extra-libraries: stdc++ Festival estbase estools eststring asound gomp ncursesw
     default-language: Haskell2010
