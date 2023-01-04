@@ -1,5 +1,13 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ForeignFunctionInterface #-}
+
+{- |
+Low Level bindings to @festival.h@.  This module requires thread-local
+initialization before the useful function can be used.  If you want to
+parallelize wave synthesis you should use `forkIO` from `Control.Concurrent`
+for each _instance_ of festival.  Maybe you can cheat by initializing in one
+thread and then cloning the environment for CoW work in a posix thread.
+-}
 module Festival.C
   ( InitConf (..)
   , initialize
@@ -26,8 +34,16 @@ import           GHC.Natural (Natural)
 import           Data.Bifunctor (second)
 import qualified Data.ByteString.Internal as BS
 
-data InitConf = InitConf { loadConf :: Bool, heapSize :: Int }
-  deriving (Eq, Show)
+-- | A simple config type that is passed to initialization of festival.
+data InitConf
+  = InitConf
+  { -- | Should Festival load the systemwide config files.
+    -- You almost certainly want this to be `True`.
+    loadConf :: Bool
+    -- | Their documentation recommends around @240000@, but this segfaults
+    -- for me on 64 bit arch linux.  I normally use @600000@
+  , heapSize :: Int
+  } deriving (Eq, Show)
 
 initialize :: InitConf -> IO ()
 initialize InitConf{..} = initC (if loadConf then 1 else 0) (toEnum heapSize)
@@ -43,7 +59,7 @@ sayText :: String -> IO ()
 sayText = flip withCString sayTextC
 foreign import ccall "festival_c_say_text" sayTextC :: CString -> IO ()
 
--- | Foreign pointer to instance of C++ class `EST_Wave` from the EST collection
+-- | Foreign pointer to instance of C++ class `ESTWave` from the EST collection
 -- of speech processing tools from Edinburgh.  It is a dependency of festival (c).
 {#pointer *ESTWave foreign finalizer freeWave newtype #}
 
@@ -55,9 +71,12 @@ foreign import ccall "festival_c_say_text" sayTextC :: CString -> IO ()
 sampleRate :: ESTWave -> Natural
 sampleRate = toEnum . fromIntegral . cSampleRate
 
+-- | Setting the sample rate before @cTextToWave@ gives the desired
+-- rate to the sample (big wow).
 setSampleRate :: Natural -> ESTWave -> IO ()
 setSampleRate rate wave = cSetSampleRate wave . toEnum $ fromIntegral rate
 
+-- | Number of 16bit samples in the `ESTWave`.
 sampleCount :: ESTWave -> Natural
 sampleCount = toEnum . fromIntegral . cSampleCount
 
