@@ -45,6 +45,7 @@ data InitConf
   , heapSize :: Int
   } deriving (Eq, Show)
 
+-- | `initialize` must be called before usign any other festival functions.
 initialize :: InitConf -> IO ()
 initialize InitConf{..} = initC (if loadConf then 1 else 0) (toEnum heapSize)
 foreign import ccall "festival_c_initialize" initC :: CInt -> CInt -> IO ()
@@ -68,6 +69,7 @@ foreign import ccall "festival_c_say_text" sayTextC :: CString -> IO ()
 {#fun setSampleRate as cSetSampleRate { `ESTWave', `CInt' } -> `()' #}
 {#fun pure sampleCount as cSampleCount { `ESTWave' } -> `CInt' #}
 
+-- | Get the sample rate for some given wave.
 sampleRate :: ESTWave -> Natural
 sampleRate = toEnum . fromIntegral . cSampleRate
 
@@ -80,10 +82,12 @@ setSampleRate rate wave = cSetSampleRate wave . toEnum $ fromIntegral rate
 sampleCount :: ESTWave -> Natural
 sampleCount = toEnum . fromIntegral . cSampleCount
 
+-- | Create a new CPP ESTWave object with sample rate `rate`.
 newWave :: Natural -> IO ESTWave
 newWave rate = (fmap . const) <*> setSampleRate rate =<< cNewWave
 
 {#fun festival_c_text_to_wave as cTextToWave { `CString', `ESTWave' } -> `CInt' #}
+-- | Get the raw speech synthesis from some text given a sample rate.
 textToWave :: Int -> String -> IO (Either String ESTWave)
 textToWave sampleRate = flip withCString $ \text -> do
   wave <- cNewWave
