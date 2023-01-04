@@ -4,10 +4,10 @@ version:            0.1.0.0
 
 synopsis:           C bindings plus conveniences for the festival tts system.
 
-description:        Visit the README.md at https://github.com:guygastineau/haskell-festival#README.md
+description:        Visit the README.md at https://github.com:guygastineau/festival-hs#README.md
 
 
-bug-reports:        https://github.com/guygastineau/haskell-festival/issues
+bug-reports:        https://github.com/guygastineau/festival-hs/issues
 
 license:            BSD-3-Clause
 author:             Guy Gastineau
@@ -39,4 +39,4 @@ library
 
 source-repository head
    type:     git
-   location: https://github.com/guygastineau/haskell-festival.git
+   location: https://github.com/guygastineau/festival-hs.git
