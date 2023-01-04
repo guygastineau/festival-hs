@@ -1,0 +1,15 @@
+#! /usr/bin/env sh
+
+pass ()
+{
+    printf 'Passed: "%s" test\n' "$1" >&2
+}
+
+fail ()
+{
+    printf 'Failed: "%s" test\n' "$1" >&2
+    exit 1
+}
+
+cabal run exe:festival-hs 2>/dev/null -- -s 'SFile "test.txt"' -t 'Wave 16000 (TFile "test-dup.pcm")'
+diff test.pcm test-dup.pcm && pass "simple pcm generation" || fail "simple pcm generation"
